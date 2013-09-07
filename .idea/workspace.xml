@@ -2,15 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="716b24d8-a84e-45b6-8840-9e31ea3e2553" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.travis.yml" afterPath="$PROJECT_DIR$/.travis.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gruntfile.js" afterPath="$PROJECT_DIR$/Gruntfile.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="paraclete.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="716b24d8-a84e-45b6-8840-9e31ea3e2553" time="1378565813668" ignored="false" />
+    <file path="/Dummy.txt" changelist="716b24d8-a84e-45b6-8840-9e31ea3e2553" time="1378566133518" ignored="false" />
     <file path="/.gitignore" changelist="716b24d8-a84e-45b6-8840-9e31ea3e2553" time="1378565829361" ignored="false" />
-    <file path="/.travis.yml" changelist="716b24d8-a84e-45b6-8840-9e31ea3e2553" time="1378565798038" ignored="false" />
+    <file path="/.travis.yml" changelist="716b24d8-a84e-45b6-8840-9e31ea3e2553" time="1378566306233" ignored="false" />
+    <file path="/Gruntfile.js" changelist="716b24d8-a84e-45b6-8840-9e31ea3e2553" time="1378566277268" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,15 +72,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="uiDesigner.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.idea/uiDesigner.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="misc.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.idea/misc.xml">
           <provider selected="true" editor-type-id="text-editor">
@@ -119,16 +111,16 @@
       <file leaf-file-name="workspace.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="78" selection-start="1514" selection-end="1514" vertical-scroll-proportion="0.0">
+            <state line="24" column="78" selection-start="1643" selection-end="1643" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="README.md" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="118" selection-start="118" selection-end="118" vertical-scroll-proportion="0.0">
+            <state line="10" column="80" selection-start="324" selection-end="324" vertical-scroll-proportion="-6.0">
               <folding />
             </state>
           </provider>
@@ -137,10 +129,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".travis.yml" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Gruntfile.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Gruntfile.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="77" column="26" selection-start="2310" selection-end="2310" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".travis.yml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.travis.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="17" selection-start="143" selection-end="143" vertical-scroll-proportion="0.0">
+            <state line="6" column="12" selection-start="110" selection-end="110" vertical-scroll-proportion="0.13867489">
               <folding />
             </state>
           </provider>
@@ -183,9 +184,10 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/paraclete.iml" />
-        <option value="$PROJECT_DIR$/.travis.yml" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/Gruntfile.js" />
+        <option value="$PROJECT_DIR$/.travis.yml" />
       </list>
     </option>
   </component>
@@ -469,7 +471,11 @@
       <created>1378565821238</created>
       <updated>1378565821238</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="added travis image, .idea gitignore">
+      <created>1378566135343</created>
+      <updated>1378566135343</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -543,7 +549,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor readme, added travis yml" />
+    <option name="LAST_COMMIT_MESSAGE" value="added travis image, .idea gitignore" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -559,6 +565,7 @@
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="initial commit" />
     <MESSAGE value="refactor readme, added travis yml" />
+    <MESSAGE value="added travis image, .idea gitignore" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -629,7 +636,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="78" selection-start="1514" selection-end="1514" vertical-scroll-proportion="0.0">
+        <state line="24" column="78" selection-start="1643" selection-end="1643" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -637,13 +644,6 @@
     <entry file="file://$PROJECT_DIR$/src/core/object.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="29" column="111" selection-start="672" selection-end="672" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.travis.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="17" selection-start="143" selection-end="143" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -657,12 +657,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="118" selection-start="118" selection-end="118" vertical-scroll-proportion="0.0">
+        <state line="10" column="80" selection-start="324" selection-end="324" vertical-scroll-proportion="-6.0">
           <folding />
         </state>
       </provider>
       <provider editor-type-id="MarkdownPreviewEditor">
         <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Gruntfile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="77" column="26" selection-start="2310" selection-end="2310" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="12" selection-start="110" selection-end="110" vertical-scroll-proportion="0.13867489">
+          <folding />
+        </state>
       </provider>
     </entry>
   </component>

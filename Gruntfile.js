@@ -40,6 +40,10 @@ module.exports = function (grunt) {
             unit: {
                 configFile: 'test/karma.conf.js',
                 singleRun: false
+            },
+            travis: {
+                configFile: 'test/karma.conf.js',
+                singleRun: true
             }
         },
 
@@ -70,6 +74,7 @@ module.exports = function (grunt) {
     // Default task(s).
     grunt.registerTask('default', ['clean', 'concat', 'uglify']);
     grunt.registerTask('dev', ['clean', 'concat', 'uglify', 'watch']);
-    grunt.registerTask('test', ['clean', 'concat', 'uglify', 'preprocess', 'karma']);
+    grunt.registerTask('test', ['clean', 'concat', 'uglify', 'preprocess', 'karma:unit']);
+    grunt.registerTask('ci', ['clean', 'concat', 'uglify', 'preprocess', 'karma:travis']);
 
 };
