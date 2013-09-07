@@ -254,6 +254,15 @@ var Paraclete = {
          */
         'object': function (val) {
             return checkFn(val) === '[object Object]';
+        },
+
+        /**
+         * Checks if a value is a boolean
+         * @param val
+         * @returns {boolean}
+         */
+        'boolean': function (val) {
+            return checkFn(val) === '[object Boolean]';
         }
     };
 
