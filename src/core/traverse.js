@@ -35,11 +35,12 @@
         return result;
     };
 
-    callObserver = function(rootObj, fullPath, value, property){
-        var i;
+    callObserver = function (rootObj, fullPath, value, property) {
+        var i,
+            observers;
 
         if (rootObj._meta && rootObj._meta.observations[fullPath]) {
-            var observers = rootObj._meta.observations[fullPath];
+            observers = rootObj._meta.observations[fullPath];
             for (i = 0; i < observers.length; i += 1) {
                 observers[i].fn.apply(null, [property, value]);
             }
@@ -50,10 +51,10 @@
         if (!fullPath) {
             fullPath = path;
         }
-        if(!rootObj){
+        if (!rootObj) {
             rootObj = obj;
         }
-        if(!digested){
+        if (!digested) {
             digested = [];
             callObserver(rootObj, digested.join('.'), value, path);
         }

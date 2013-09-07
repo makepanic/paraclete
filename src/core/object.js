@@ -7,7 +7,7 @@
      Paraclete
      */
 
-    var Object = Paraclete.Class.extend({
+    Paraclete.Object = Paraclete.Class.extend({
         _meta: {
             observations: {}
         },
@@ -51,7 +51,7 @@
         observe: function (path, onChanged) {
             var observationId = Paraclete.getId();
 
-            if(typeof path === 'function'){
+            if (typeof path === 'function') {
                 onChanged = path;
                 path = '';
             }
@@ -72,23 +72,25 @@
          * @param id
          * @returns {boolean} if something was removed
          */
-        ignore: function(id){
-            if(!id){
+        ignore: function (id) {
+            if (!id) {
                 this._meta.observations = {};
                 return true;
             }
 
             var ignored = false,
                 observation,
-                observationKey;
+                observationKey,
+                i,
+                o;
 
-            for(observationKey in this._meta.observations){
-                if(this._meta.observations.hasOwnProperty(observationKey)){
+            for (observationKey in this._meta.observations) {
+                if (this._meta.observations.hasOwnProperty(observationKey)) {
                     observation = this._meta.observations[observationKey];
 
-                    for(var i = 0; i < observation.length; i++){
-                        var o = observation[i];
-                        if(o.id === id){
+                    for (i = 0; i < observation.length; i += 1) {
+                        o = observation[i];
+                        if (o.id === id) {
 
                             this._meta.observations[observationKey].splice(i, 1);
                             ignored = true;
@@ -104,7 +106,5 @@
             return ignored;
         }
     });
-
-    Paraclete.Object = Object;
 
 })(Paraclete);

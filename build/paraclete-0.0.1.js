@@ -19,11 +19,18 @@
         root.Paraclete = factory();
     }
 }((typeof window === 'object' && window) || this, function () {
+/*jslint nomen:true*/
+/*global
+ Paraclete
+ */
 var Paraclete = {
     v: '0.0.1',
     _id: 0,
-    getId: function(){
-        return ++Paraclete._id;
+    getId: function () {
+        'use strict';
+
+        Paraclete._id += 1;
+        return Paraclete._id;
     }
 };
 /*jslint sloppy:true*/
@@ -39,7 +46,7 @@ var Paraclete = {
      * MIT Licensed.
      */
     // Inspired by base2 and Prototype
-    //noinspection JSLint
+    //noinspection JSLint,JSValidateTypes
     initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
@@ -138,11 +145,12 @@ var Paraclete = {
         return result;
     };
 
-    callObserver = function(rootObj, fullPath, value, property){
-        var i;
+    callObserver = function (rootObj, fullPath, value, property) {
+        var i,
+            observers;
 
         if (rootObj._meta && rootObj._meta.observations[fullPath]) {
-            var observers = rootObj._meta.observations[fullPath];
+            observers = rootObj._meta.observations[fullPath];
             for (i = 0; i < observers.length; i += 1) {
                 observers[i].fn.apply(null, [property, value]);
             }
@@ -153,10 +161,10 @@ var Paraclete = {
         if (!fullPath) {
             fullPath = path;
         }
-        if(!rootObj){
+        if (!rootObj) {
             rootObj = obj;
         }
-        if(!digested){
+        if (!digested) {
             digested = [];
             callObserver(rootObj, digested.join('.'), value, path);
         }
@@ -201,7 +209,7 @@ var Paraclete = {
      Paraclete
      */
 
-    var Object = Paraclete.Class.extend({
+    Paraclete.Object = Paraclete.Class.extend({
         _meta: {
             observations: {}
         },
@@ -245,7 +253,7 @@ var Paraclete = {
         observe: function (path, onChanged) {
             var observationId = Paraclete.getId();
 
-            if(typeof path === 'function'){
+            if (typeof path === 'function') {
                 onChanged = path;
                 path = '';
             }
@@ -266,23 +274,25 @@ var Paraclete = {
          * @param id
          * @returns {boolean} if something was removed
          */
-        ignore: function(id){
-            if(!id){
+        ignore: function (id) {
+            if (!id) {
                 this._meta.observations = {};
                 return true;
             }
 
             var ignored = false,
                 observation,
-                observationKey;
+                observationKey,
+                i,
+                o;
 
-            for(observationKey in this._meta.observations){
-                if(this._meta.observations.hasOwnProperty(observationKey)){
+            for (observationKey in this._meta.observations) {
+                if (this._meta.observations.hasOwnProperty(observationKey)) {
                     observation = this._meta.observations[observationKey];
 
-                    for(var i = 0; i < observation.length; i++){
-                        var o = observation[i];
-                        if(o.id === id){
+                    for (i = 0; i < observation.length; i += 1) {
+                        o = observation[i];
+                        if (o.id === id) {
 
                             this._meta.observations[observationKey].splice(i, 1);
                             ignored = true;
@@ -298,8 +308,6 @@ var Paraclete = {
             return ignored;
         }
     });
-
-    Paraclete.Object = Object;
 
 })(Paraclete);
     return Paraclete;

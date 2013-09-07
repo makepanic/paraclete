@@ -11,7 +11,7 @@
      * MIT Licensed.
      */
     // Inspired by base2 and Prototype
-    //noinspection JSLint
+    //noinspection JSLint,JSValidateTypes
     initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
