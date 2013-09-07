@@ -11,6 +11,7 @@ module.exports = function (grunt) {
                     'src/core/bootstrap.js',
                     'src/core/class.js',
                     'src/core/traverse.js',
+                    'src/core/type.js',
                     'src/core/object.js',
                     'src/outro.js'
                 ],

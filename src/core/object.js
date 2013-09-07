@@ -51,10 +51,11 @@
         observe: function (path, onChanged) {
             var observationId = Paraclete.getId();
 
-            if (typeof path === 'function') {
+            if (Paraclete.Type.is('function', path)) {
                 onChanged = path;
                 path = '';
             }
+
             if (this._meta.observations[path] === undefined) {
                 this._meta.observations[path] = [];
             }

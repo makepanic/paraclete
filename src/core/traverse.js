@@ -23,7 +23,7 @@
                 if (nextSplit.length >= 1) {
                     result = traversePathGet(obj[next], nextSplit.join('.'));
                 } else {
-                    if (typeof obj[next] === 'function') {
+                    if (Paraclete.Type.is('function', obj[next])) {
                         result = obj[next]();
                     } else {
                         result = obj[next];
