@@ -1,4 +1,4 @@
-#Paraclete
+#Paraclete [![Build Status](https://travis-ci.org/makepanic/paraclete.png)](https://travis-ci.org/makepanic/paraclete)
 
 > Paraclete (Gr. παράκλητος, Lat. paracletus) means advocate or helper.
 > from [wikipedia: Paraclete](http://en.wikipedia.org/wiki/Paraclete)
