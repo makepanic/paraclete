@@ -49,7 +49,7 @@
          * @returns {*} id or array of ids of the added observer
          */
         observe: function (path, onChanged) {
-            var observationId = Paraclete.getId(),
+            var observationId,
                 i,
                 ids = [];
 
@@ -59,6 +59,8 @@
                 }
                 return ids;
             }
+
+            observationId = Paraclete.getId();
 
             if (Paraclete.Type.is('function', path)) {
                 onChanged = path;
@@ -83,16 +85,28 @@
          * @returns {boolean} if something was removed
          */
         ignore: function (id) {
+            var ignored = false,
+                ignoredItem = false,
+                observation,
+                observationKey,
+                i,
+                j,
+                o;
+
             if (!id) {
                 this._meta.observations = {};
                 return true;
             }
 
-            var ignored = false,
-                observation,
-                observationKey,
-                i,
-                o;
+            // if array loop through and ignore each id
+            if (Paraclete.Type.is('array', id)) {
+                for (j = 0; j < id.length; j += 1) {
+                    ignoredItem = false;
+                    ignoredItem = this.ignore(id[j]);
+                    ignored = ignored && ignoredItem;
+                }
+                return ignored;
+            }
 
             for (observationKey in this._meta.observations) {
                 if (this._meta.observations.hasOwnProperty(observationKey)) {

@@ -72,6 +72,8 @@ describe('Paraclete object tests', function() {
 
     it("adds an observer for deep.param and removes it", function () {
         var deepParamObserverCalled = 0,
+            arrayDeepParamObserverCalled = 0,
+            observerIds,
             observerId;
 
         testInstance.ignore();
@@ -80,14 +82,20 @@ describe('Paraclete object tests', function() {
             deepParamObserverCalled++;
         });
 
+        observerIds = testInstance.observe(['deep.param'], function(){
+            arrayDeepParamObserverCalled++;
+        });
+
         runs(function() {
             testInstance.set('deep.param', 20);
             testInstance.ignore(observerId);
+            testInstance.ignore(observerIds)
             testInstance.set('deep.param', 20);
         });
 
         waitsFor(function() {
-            return  deepParamObserverCalled === 1;
+            return  deepParamObserverCalled === 1 &&
+                arrayDeepParamObserverCalled === 1;
         }, "observer was called", 1000);
     });
 
