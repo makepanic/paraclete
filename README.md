@@ -17,6 +17,8 @@ If a property accessed is a function, it is executed and returns the function re
 
 ####Example:
 
+Creates a `User` class that extends Paraclete.Object with `firstName`, `lastName` and `fullName`.
+
     var User = Paraclete.Object.extend({
         firstName: '',
         lastName: '',
@@ -25,25 +27,24 @@ If a property accessed is a function, it is executed and returns the function re
         }
     });
 
-Creates a `User` class that extends Paraclete.Object with `firstName`, `lastName` and `fullName`.
+Creates a instance of the `User` class and overwrites the `firstName` and `lastName` parameters.
 
     var myUser = new User({
         firstName: 'Foo',
         lastName: 'Bar'
     });
 
-Creates a instance of the `User` class and overwrites the `firstName` and `lastName` parameters.
+Accesses the `fullName` property of the created user. The `fullName` comes form the `User` class and is a function.
+Functions in a `get` are executed and return their result.
 
     console.log(myUser.get('fullName'));
     // logs: 'Foo Bar'
 
-Accesses the `fullName` property of the created user. The `fullName` comes form the `User` class and is a function.
-Functions in a `get` are executed and return their result.
+Sets a new value for `firstName`
 
     myUser.set('firstName', 'John');
     // returns 'John'
 
-Sets a new value for `firstName`
 
     myUser.get('fullName')
     // returns 'John Bar'
