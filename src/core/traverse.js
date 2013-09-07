@@ -7,7 +7,8 @@
      */
 
     var traversePathGet,
-        traversePathSet;
+        traversePathSet,
+        callObserver;
 
     traversePathGet = function (obj, path) {
         var nextSplit = path.split('.'),
@@ -34,33 +35,46 @@
         return result;
     };
 
-    traversePathSet = function (obj, path, value, fullPath) {
+    callObserver = function(rootObj, fullPath, value, property){
+        var i;
+
+        if (rootObj._meta && rootObj._meta.observations[fullPath]) {
+            var observers = rootObj._meta.observations[fullPath];
+            for (i = 0; i < observers.length; i += 1) {
+                observers[i].apply(null, [property, value]);
+            }
+        }
+    };
+
+    traversePathSet = function (obj, path, value, fullPath, rootObj, digested) {
         if (!fullPath) {
             fullPath = path;
+        }
+        if(!rootObj){
+            rootObj = obj;
+        }
+        if(!digested){
+            digested = [];
         }
 
         var nextSplit,
             next,
-            result,
-            i;
+            result;
 
         nextSplit = path.split('.');
 
         if (nextSplit.length) {
             next = nextSplit[0];
+            digested.push(next);
             nextSplit = nextSplit.slice(1);
 
             if (nextSplit.length > 0) {
-                result = traversePathSet(obj[next], nextSplit.join('.'), value, fullPath);
+                // has more to traverse
+                callObserver(rootObj, digested.join('.'), value, nextSplit.join('.'));
+                result = traversePathSet(obj[next], nextSplit.join('.'), value, fullPath, rootObj, digested);
             } else {
-                // am ende angekommen
-
-                if (obj._meta && obj._meta.observations[fullPath]) {
-                    for (i = 0; i < obj._meta.observations[fullPath].length; i += 1) {
-                        obj._meta.observations[fullPath][i].apply(null, [fullPath, value]);
-                    }
-                }
-
+                // nothing left to traverse
+                callObserver(rootObj, fullPath, value, '');
                 result = obj[next] = value;
             }
         }

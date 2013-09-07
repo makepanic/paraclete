@@ -15,7 +15,63 @@ It's a JavaScript helper library.
 All Properties in a `Paraclete.Object` are accessable via `get` and changeable with `set`.
 If a property accessed is a function, it is executed and returns the function result instead.
 
-####Example:
+####Methods
+
+Every instance of `Paraclete.Object` has the following methods:
+
+#####set( `path`, `value`)
+
+__returns__ the given value
+
+Sets a value by following the given path.
+
+__Example:__
+
+    // set myObj.foo to 'bar'
+    myObj.set('foo', 'bar');
+
+    // set myObj.deep.param to 'value'
+    myObj.set('deep.param', 'value');
+
+#####get( `path`)
+
+__returns__ value in `path` or undefined
+
+Returns a value by following the given path.
+
+__Example:__
+
+    // returns 'bar' (myObj.foo)
+    myObj.get('foo');
+
+    // returns 'value' (myObj.deep.param)
+    myObj.get('deep.param');
+
+#####observe( `path`, `callback`)
+
+__returns__ nothing
+
+Adds an observer for changes on the given `path`.
+The parameter used on the `callback` are:
+
+1. path to parameter relative to observed path
+2. value that is going to be set
+
+__Example:__
+
+    myObj.observe('deep', function(param, value){
+        console.log('deep changed @', param, 'to', value);
+    });
+
+    myObj.observe('deep.param', function(param, value){
+        console.log('deep.param changed @', param, 'to', value);
+    });
+
+    myObj.set('deep.param', 'newValue');
+    // calls observer for 'deep' -> "deep changed @ param to newValue"
+    // calls observer for 'deep.param' -> "deep.param changed @  to newValue"
+
+####Example
 
 Creates a `User` class that extends Paraclete.Object with `firstName`, `lastName` and `fullName`.
 
@@ -62,6 +118,19 @@ Sets a new value for `firstName`
 
     myUser.get('dad.fullName');
     // returns 'Dad Foo'
+
+Adds an observer for `dad.lastName` and `dad`
+
+    myUser.observe('dad.lastName', function(fullPath, value){
+        console.log('dad.lastName changed, property:', fullPath, value)
+    });
+    myUser.observe('dad', function(fullPath, value){
+        console.log('dad changed, property:', fullPath, value)
+    });
+
+    myUser.set('dad.lastName', 'Bar');
+    // console.log -> 'dad changed, property: lastName Bar
+    // console.log -> 'dad.lastName changed, property:  Bar
 
 ##Building
 
