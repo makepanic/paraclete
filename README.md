@@ -49,7 +49,7 @@ __Example:__
 
 #####observe( [`path`,] `callback`)
 
-__returns__ nothing
+__returns__ observer id
 
 Adds an observer for changes on the given `path`.
 If no `path` is given the `callback` is called once something is set on the object.
@@ -76,6 +76,13 @@ __Example:__
     // calls observer for '' -> "myObj changed @ deep.param to newValue"
     // calls observer for 'deep' -> "deep changed @ param to newValue"
     // calls observer for 'deep.param' -> "deep.param changed @  to newValue"
+
+#####ignore( [`id`] )
+
+__returns__ true if observer was removed
+
+Removes the observer with a given id.
+If no `id` is given, it removes all observer for the object.
 
 ####Example
 

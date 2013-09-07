@@ -20,7 +20,11 @@
     }
 }((typeof window === 'object' && window) || this, function () {
 var Paraclete = {
-    v: '0.0.1'
+    v: '0.0.1',
+    _id: 0,
+    getId: function(){
+        return ++Paraclete._id;
+    }
 };
 /*jslint sloppy:true*/
 //! Paraclete.Class
@@ -140,7 +144,7 @@ var Paraclete = {
         if (rootObj._meta && rootObj._meta.observations[fullPath]) {
             var observers = rootObj._meta.observations[fullPath];
             for (i = 0; i < observers.length; i += 1) {
-                observers[i].apply(null, [property, value]);
+                observers[i].fn.apply(null, [property, value]);
             }
         }
     };
@@ -216,7 +220,7 @@ var Paraclete = {
 
         /**
          * get value from path
-         * @param path string traverse this path to find the value
+         * @param {string} path string traverse this path to find the value
          * @returns {*} value or undefined
          */
         get: function (path) {
@@ -224,23 +228,74 @@ var Paraclete = {
         },
         /**
          * set value in path
-         * @param path string traverse this path to find the value
-         * @param value * overwrite found value
+         * @param {string} path string traverse this path to find the value
+         * @param {*} value * overwrite found value
          * @returns {*} value
          */
         set: function (path, value) {
             return Paraclete.Traverse.setP(this, path, value);
         },
 
-        observe: function (prop, onChanged) {
-            if(typeof prop === 'function'){
-                onChanged = prop;
-                prop = '';
+        /**
+         * Adds an observer for path
+         * @param path {string} path to observed property
+         * @param onChanged {function} function to call on change
+         * @returns {*} id of the added observer
+         */
+        observe: function (path, onChanged) {
+            var observationId = Paraclete.getId();
+
+            if(typeof path === 'function'){
+                onChanged = path;
+                path = '';
             }
-            if (this._meta.observations[prop] === undefined) {
-                this._meta.observations[prop] = [];
+            if (this._meta.observations[path] === undefined) {
+                this._meta.observations[path] = [];
             }
-            this._meta.observations[prop].push(onChanged);
+            this._meta.observations[path].push({
+                id: observationId,
+                fn: onChanged
+            });
+
+            return observationId;
+        },
+
+        /**
+         * Removes an observer with the given id.
+         * If no id is given, remove all observers
+         * @param id
+         * @returns {boolean} if something was removed
+         */
+        ignore: function(id){
+            if(!id){
+                this._meta.observations = {};
+                return true;
+            }
+
+            var ignored = false,
+                observation,
+                observationKey;
+
+            for(observationKey in this._meta.observations){
+                if(this._meta.observations.hasOwnProperty(observationKey)){
+                    observation = this._meta.observations[observationKey];
+
+                    for(var i = 0; i < observation.length; i++){
+                        var o = observation[i];
+                        if(o.id === id){
+
+                            this._meta.observations[observationKey].splice(i, 1);
+                            ignored = true;
+
+                            return ignored;
+                        }
+                    }
+
+                }
+            }
+
+
+            return ignored;
         }
     });
 

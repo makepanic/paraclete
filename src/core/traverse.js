@@ -41,7 +41,7 @@
         if (rootObj._meta && rootObj._meta.observations[fullPath]) {
             var observers = rootObj._meta.observations[fullPath];
             for (i = 0; i < observers.length; i += 1) {
-                observers[i].apply(null, [property, value]);
+                observers[i].fn.apply(null, [property, value]);
             }
         }
     };
