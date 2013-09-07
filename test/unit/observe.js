@@ -33,6 +33,11 @@ describe('Paraclete object tests', function() {
         var deepObserverCalled = 0;
         var deepParamObserverCalled = 0;
         var deepParamObjectObserverCalled = 0;
+        var testInstanceObserverCalled = 0;
+
+        testInstance.observe(function(){
+            testInstanceObserverCalled++;
+        });
 
         testInstance.observe('deep', function(){
             deepObserverCalled++;
@@ -54,7 +59,8 @@ describe('Paraclete object tests', function() {
         waitsFor(function() {
             return  deepObserverCalled === 2 &&
                     deepParamObserverCalled === 1 &&
-                    deepParamObjectObserverCalled === 1;
+                    deepParamObjectObserverCalled === 1 &&
+                    testInstanceObserverCalled === 2;
         }, "observer was called", 1000);
     });
 

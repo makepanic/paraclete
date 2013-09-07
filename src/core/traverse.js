@@ -55,6 +55,7 @@
         }
         if(!digested){
             digested = [];
+            callObserver(rootObj, digested.join('.'), value, path);
         }
 
         var nextSplit,

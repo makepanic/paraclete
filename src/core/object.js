@@ -43,6 +43,10 @@
         },
 
         observe: function (prop, onChanged) {
+            if(typeof prop === 'function'){
+                onChanged = prop;
+                prop = '';
+            }
             if (this._meta.observations[prop] === undefined) {
                 this._meta.observations[prop] = [];
             }

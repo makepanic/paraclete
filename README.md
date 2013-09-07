@@ -47,11 +47,12 @@ __Example:__
     // returns 'value' (myObj.deep.param)
     myObj.get('deep.param');
 
-#####observe( `path`, `callback`)
+#####observe( [`path`,] `callback`)
 
 __returns__ nothing
 
 Adds an observer for changes on the given `path`.
+If no `path` is given the `callback` is called once something is set on the object.
 The parameter used on the `callback` are:
 
 1. path to parameter relative to observed path
@@ -67,7 +68,12 @@ __Example:__
         console.log('deep.param changed @', param, 'to', value);
     });
 
+    myObj.observe(function(param, value){
+        console.log('myObj changed @', param, 'to', value);
+    });
+
     myObj.set('deep.param', 'newValue');
+    // calls observer for '' -> "myObj changed @ deep.param to newValue"
     // calls observer for 'deep' -> "deep changed @ param to newValue"
     // calls observer for 'deep.param' -> "deep.param changed @  to newValue"
 
