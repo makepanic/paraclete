@@ -9,8 +9,8 @@ It's a JavaScript helper library.
 
 ##Features
 
-[`Paraclete.Object`](https://github.com/makepanic/paraclete/wiki/Paraclete.Object)
-[`Paraclete.Type`](https://github.com/makepanic/paraclete/wiki/Paraclete.Type)
+- [`Paraclete.Object`](https://github.com/makepanic/paraclete/wiki/Paraclete.Object) - powerful `Object`
+- [`Paraclete.Type`](https://github.com/makepanic/paraclete/wiki/Paraclete.Type) - variable type checking
 
 ##Building
 
