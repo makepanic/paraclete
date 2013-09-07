@@ -44,12 +44,21 @@
 
         /**
          * Adds an observer for path
-         * @param path {string} path to observed property
+         * @param path {string|Array} path or array of paths to observed property
          * @param onChanged {function} function to call on change
-         * @returns {*} id of the added observer
+         * @returns {*} id or array of ids of the added observer
          */
         observe: function (path, onChanged) {
-            var observationId = Paraclete.getId();
+            var observationId = Paraclete.getId(),
+                i,
+                ids = [];
+
+            if (Paraclete.Type.is('array', path)) {
+                for (i = 0; i < path.length; i += 1) {
+                    ids.push(this.observe(path[i], onChanged));
+                }
+                return ids;
+            }
 
             if (Paraclete.Type.is('function', path)) {
                 onChanged = path;
