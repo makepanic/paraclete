@@ -21,7 +21,8 @@ module.exports = function (grunt) {
 
         uglify: {
             options: {
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> @see https://github.com/makepanic/paraclete */\n'
+                //sourceMap: 'build/<%= pkg.name %>-<%= pkg.version %>.min.map.js',
+                banner: '/*! <%= pkg.name %> v<%= pkg.version %> | build <%= grunt.template.today("yyyymmddhhmmss") %> | license: MIT | https://github.com/makepanic/paraclete */\n'
             },
             build: {
                 files: {
