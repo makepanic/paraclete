@@ -12,6 +12,8 @@ module.exports = function (grunt) {
                     'src/core/class.js',
                     'src/core/traverse.js',
                     'src/core/type.js',
+                    'src/core/rootObject.js',
+                    'src/core/observable.js',
                     'src/core/object.js',
                     'src/outro.js'
                 ],

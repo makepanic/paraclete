@@ -129,7 +129,7 @@ var Paraclete = {
             next = nextSplit[0];
             nextSplit = nextSplit.slice(1);
 
-            if (obj[next]) {
+            if (obj[next] !== undefined) {
                 if (nextSplit.length >= 1) {
                     result = traversePathGet(obj[next], nextSplit.join('.'));
                 } else {
@@ -170,7 +170,8 @@ var Paraclete = {
         var nextSplit,
             next,
             result,
-            i;
+            i,
+            canObserve;
 
         if (!observerCalls) {
             observerCalls = [];
@@ -181,9 +182,14 @@ var Paraclete = {
         if (!rootObj) {
             rootObj = obj;
         }
+        canObserve = rootObj instanceof Paraclete.Observable;
+
         if (!digested) {
             digested = [];
-            observerCalls = observerCalls.concat(callObserver(rootObj, '', value, path));
+
+            if (canObserve) {
+                observerCalls = observerCalls.concat(callObserver(rootObj, '', value, path));
+            }
         }
 
         nextSplit = path.split('.');
@@ -196,15 +202,22 @@ var Paraclete = {
             if (nextSplit.length > 0) {
                 // has more to traverse
 
-                observerCalls = observerCalls.concat(callObserver(rootObj, digested.join('.'), value, nextSplit.join('.')));
+                if (canObserve) {
+                    observerCalls = observerCalls.concat(callObserver(rootObj, digested.join('.'), value, nextSplit.join('.')));
+                }
                 result = traversePathSet(obj[next], nextSplit.join('.'), value, fullPath, rootObj, digested, observerCalls);
             } else {
                 // nothing left to traverse
-                observerCalls = observerCalls.concat(callObserver(rootObj, fullPath, value, ''));
+                if (canObserve) {
+                    observerCalls = observerCalls.concat(callObserver(rootObj, fullPath, value, ''));
+                }
+
                 result = obj[next] = value;
 
-                for (i = 0; i < observerCalls.length; i += 1) {
-                    observerCalls[i]();
+                if (canObserve) {
+                    for (i = 0; i < observerCalls.length; i += 1) {
+                        observerCalls[i]();
+                    }
                 }
             }
         }
@@ -310,11 +323,12 @@ var Paraclete = {
      Paraclete
      */
 
-    Paraclete.Object = Paraclete.Class.extend({
-        _meta: {
-            observations: {}
-        },
+    Paraclete.RootObject = Paraclete.Class.extend({
 
+        /**
+         * Copy all properties from props to this object
+         * @param {object} props
+         */
         init: function (props) {
             if (props) {
                 var prop;
@@ -343,6 +357,22 @@ var Paraclete = {
          */
         set: function (path, value) {
             return Paraclete.Traverse.setP(this, path, value);
+        }
+    });
+
+})(Paraclete);
+//! Paraclete.Object
+(function (Paraclete) {
+    'use strict';
+    /*jslint nomen:true*/
+
+    /*global
+     Paraclete
+     */
+
+    Paraclete.Observable = Paraclete.RootObject.extend({
+        _meta: {
+            observations: {}
         },
 
         /**
@@ -401,8 +431,9 @@ var Paraclete = {
                 return true;
             }
 
-            // if array loop through and ignore each id
+            // check if first parameter is an array
             if (Paraclete.Type.is('array', id)) {
+                // if it's an array loop through it and call ignore with each array item
                 for (j = 0; j < id.length; j += 1) {
                     ignoredItem = false;
                     ignoredItem = this.ignore(id[j]);
@@ -429,8 +460,63 @@ var Paraclete = {
                 }
             }
 
-
             return ignored;
+        }
+    });
+
+})(Paraclete);
+//! Paraclete.Object
+(function (Paraclete) {
+    'use strict';
+    /*jslint nomen:true*/
+
+    /*global
+     Paraclete
+     */
+
+    Paraclete.Object = Paraclete.Observable.extend({
+
+        inc: function (property, incAmount) {
+            var amount = 1,
+                oldVal,
+                newVal;
+
+            if (Paraclete.Type.is('number', incAmount)) {
+                amount = incAmount;
+            }
+
+            oldVal = this.get(property);
+            if (Paraclete.Type.is('number', oldVal)) {
+                newVal = this.set(property, oldVal + amount);
+            }
+
+            return newVal;
+        },
+
+        dec: function (property, incAmount) {
+            var amount = 1,
+                oldVal,
+                newVal;
+
+            if (Paraclete.Type.is('number', incAmount)) {
+                amount = incAmount;
+            }
+
+            oldVal = this.get(property);
+
+            if (Paraclete.Type.is('number', oldVal)) {
+                newVal = this.set(property, oldVal - amount);
+            }
+
+            return newVal;
+        },
+
+        toggle: function (property) {
+            var prop = this.get(property);
+            if (Paraclete.Type.is('boolean', prop)) {
+                prop = this.set(property, !prop);
+            }
+            return prop;
         }
     });
 

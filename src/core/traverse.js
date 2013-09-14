@@ -19,7 +19,7 @@
             next = nextSplit[0];
             nextSplit = nextSplit.slice(1);
 
-            if (obj[next]) {
+            if (obj[next] !== undefined) {
                 if (nextSplit.length >= 1) {
                     result = traversePathGet(obj[next], nextSplit.join('.'));
                 } else {
@@ -60,7 +60,8 @@
         var nextSplit,
             next,
             result,
-            i;
+            i,
+            canObserve;
 
         if (!observerCalls) {
             observerCalls = [];
@@ -71,9 +72,14 @@
         if (!rootObj) {
             rootObj = obj;
         }
+        canObserve = rootObj instanceof Paraclete.Observable;
+
         if (!digested) {
             digested = [];
-            observerCalls = observerCalls.concat(callObserver(rootObj, '', value, path));
+
+            if (canObserve) {
+                observerCalls = observerCalls.concat(callObserver(rootObj, '', value, path));
+            }
         }
 
         nextSplit = path.split('.');
@@ -86,15 +92,22 @@
             if (nextSplit.length > 0) {
                 // has more to traverse
 
-                observerCalls = observerCalls.concat(callObserver(rootObj, digested.join('.'), value, nextSplit.join('.')));
+                if (canObserve) {
+                    observerCalls = observerCalls.concat(callObserver(rootObj, digested.join('.'), value, nextSplit.join('.')));
+                }
                 result = traversePathSet(obj[next], nextSplit.join('.'), value, fullPath, rootObj, digested, observerCalls);
             } else {
                 // nothing left to traverse
-                observerCalls = observerCalls.concat(callObserver(rootObj, fullPath, value, ''));
+                if (canObserve) {
+                    observerCalls = observerCalls.concat(callObserver(rootObj, fullPath, value, ''));
+                }
+
                 result = obj[next] = value;
 
-                for (i = 0; i < observerCalls.length; i += 1) {
-                    observerCalls[i]();
+                if (canObserve) {
+                    for (i = 0; i < observerCalls.length; i += 1) {
+                        observerCalls[i]();
+                    }
                 }
             }
         }
