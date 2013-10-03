@@ -10,6 +10,15 @@
     };
 
     types = {
+
+        /**
+         * checks if a value is undefined or null
+         * @param val
+         * @returns {boolean}
+         */
+        'none': function(val) {
+            return typeof val === "undefined" || val === null;
+        },
         /**
          * Checks if a value is an array
          * @param val {*}

@@ -14,6 +14,14 @@ module.exports = function (grunt) {
                     'src/core/type.js',
                     'src/core/rootObject.js',
                     'src/core/observable.js',
+                    'src/core/registry/registry.js',
+
+                    'src/core/registry/arrayRegistry.js',
+                    'src/core/registry/keyRegistry.js',
+
+                    'src/core/triggerable.js',
+                    'src/core/validation.js',
+
                     'src/core/object.js',
                     'src/outro.js'
                 ],
