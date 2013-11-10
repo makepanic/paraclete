@@ -243,6 +243,15 @@ var Paraclete = {
     };
 
     types = {
+
+        /**
+         * checks if a value is undefined or null
+         * @param val
+         * @returns {boolean}
+         */
+        'none': function(val) {
+            return typeof val === "undefined" || val === null;
+        },
         /**
          * Checks if a value is an array
          * @param val {*}
@@ -310,6 +319,30 @@ var Paraclete = {
                 is = types[type](value);
             }
             return is;
+        },
+
+        /**
+         * Trys to find a simple type string of a given value
+         * @param value
+         * @returns {*}
+         */
+        find: function (value) {
+            var found,
+                type,
+                typeString = '';
+
+            for (type in types) {
+                if (types.hasOwnProperty(type)) {
+                    found = types[type](value);
+
+                    if (found) {
+                        typeString = type;
+                        break;
+                    }
+                }
+            }
+
+            return typeString;
         }
     };
 
@@ -465,6 +498,350 @@ var Paraclete = {
     });
 
 })(Paraclete);
+//! Paraclete.Registry
+(function (Paraclete) {
+    'use strict';
+
+    /*jslint nomen:true*/
+
+    /*global
+     Paraclete
+     */
+
+    Paraclete.Registry = Paraclete.Class.extend({
+        _store: {},
+
+        add: function (key, value) {
+            var added;
+
+            if (!Paraclete.Type.is('none', key)) {
+                this._store[key] = value;
+                added = value;
+            }
+
+            return added;
+        },
+
+        find: function (key) {
+            var found;
+
+            if (!Paraclete.Type.is('none', key)) {
+                found = this._store[key];
+            }
+
+            return found;
+        },
+
+        remove: function (key) {
+            var removed;
+
+            if (!Paraclete.Type.is('none', key)) {
+                removed = this._store[key];
+                delete this._store[key];
+            }
+
+            return removed;
+        }
+    });
+
+}(Paraclete));
+//! Paraclete.KeyRegistry
+(function (Paraclete) {
+    'use strict';
+    /*jslint nomen:true*/
+
+    /*global
+     Paraclete,
+     console
+     */
+
+    Paraclete.ArrayRegistry = Paraclete.Class.extend({
+        _store: {},
+
+        add: function (key, value) {
+            var id;
+
+            if (!Paraclete.Type.is('none', key)) {
+
+                if (this._store.hasOwnProperty(key)) {
+                    this._store[key] = [];
+                }
+
+                id = Paraclete.getId();
+                this._store[key].push({
+                    val: value,
+                    id: id
+                });
+            }
+
+            return id;
+        },
+
+        find: function (key) {
+            var found,
+                store;
+
+            if (!Paraclete.Type.is('none', key)) {
+                if (this._store.hasOwnProperty(key)) {
+                    // has key in store
+                    found = this._store[key];
+                } else {
+                    // this key doesn't exist in store
+                    console.warn('[Paraclete.ArrayRegistry:find] key not found' + key);
+                }
+            } else {
+                // no key given, return everything
+
+                found = [];
+
+                for (store in this._store) {
+                    if (this._store.hasOwnProperty(store)){
+                        found = found.concat(this._store[store]);
+                    }
+                }
+            }
+
+            return found;
+        }
+    });
+
+}(Paraclete));
+//! Paraclete.KeyRegistry
+(function (Paraclete) {
+    'use strict';
+    /*jslint nomen:true*/
+
+    /*global
+     Paraclete
+     */
+
+    Paraclete.KeyRegistry = Paraclete.Registry.extend({
+        key: '',
+
+        init: function (cfg) {
+            this.key = cfg.key;
+        },
+
+        add: function (value) {
+            var added;
+
+            if (!Paraclete.Type.is('none', value[this.key])) {
+                added = this._super(value[this.key], value);
+            }
+
+            return added;
+        },
+
+        find: function (value) {
+            var found;
+
+            if (!Paraclete.Type.is('none', value[this.key])) {
+                found = this._super(value[this.key]);
+            }
+
+            return found;
+        },
+
+        remove: function (value) {
+            var removed;
+
+            if (!Paraclete.Type.is('none', value[this.key])) {
+
+                removed = value;
+                this._super(value[this.key]);
+            }
+
+            return removed;
+        }
+    });
+
+}(Paraclete));
+//! Paraclete.Object
+(function (Paraclete) {
+    'use strict';
+    /*jslint nomen:true*/
+
+    /*global
+     Paraclete
+     */
+
+    Paraclete.TriggerAble = Paraclete.Class.extend({
+        events: new Paraclete.ArrayRegistry({
+            key: 'eventType'
+        }),
+
+        hasTrigger: function (type) {
+            return this.events.hasOwnProperty(type);
+        },
+        on: function (type, callback) {
+            return this.events.add('type', callback);
+        },
+        off: function (eventId) {
+            return this.events.remove(eventId);
+        },
+        trigger: function (type, payload) {
+            var events,
+                event,
+                i;
+
+            events = this.events.find(type);
+
+            if (!Paraclete.Type.is('none', events)) {
+                for (i = 0; i < events.length; i += 1) {
+                    event = events[i];
+                    if (Paraclete.Type.is('function', event)) {
+                        event(payload);
+                    }
+                }
+            }
+
+            return events;
+        }
+    });
+
+}(Paraclete));
+//! Paraclete.Validation
+(function (Paraclete) {
+    'use strict';
+
+    var NO_SCOPE_GIVEN = 'NO_SCOPE_GIVEN';
+
+    Paraclete.Validator = {
+        fieldsEmpty: function (checkedFields) {
+            return function(fields){
+                for(var i = 0; i < checkedFields.length; i++){
+                    if (!(fields.hasOwnProperty(checkedFields[i].name) &&
+                        fields[checkedFields[i].name].length)) {
+                        return checkedFields[i].callbackType;
+                    }
+                }
+
+            }
+
+        }
+    };
+
+    /*
+    Paraclete.Validation = Paraclete.TriggerAble.extend({
+        validate: function (obj, type) {
+            if (!Paraclete.Type.is('none', type)) {
+                // has type
+
+                if (this.events.hasTrigger(type)) {
+                    // valider type gegeben
+                    this.events.trigger(type, obj);
+                } else {
+                    // type not found, do nothing
+                    console.warn('[Paraclete.Validation:validate] type not found ' + type);
+                }
+            } else {
+                // no type given
+                this.events.trigger(obj);
+            }
+        }
+    });
+    */
+
+
+    Paraclete.Validation = function () {
+        this.callbacks = {};
+        this.scopedRules = {};
+        this.rules = [];
+    };
+    /*
+    TODO:
+    - clone
+    - validate object for rules
+    - rules ignore scope
+
+     */
+    Paraclete.Validation.prototype = {
+        validate: function (obj, scope) {
+            var i,
+                hasErrors = false,
+                rules = [];
+
+            if( this.rules.hasOwnProperty(scope)){
+                // hat scope mitgegeben
+                rules = this.rules[scope];
+            }else{
+                rules = this.rules[NO_SCOPE_GIVEN];
+            }
+
+            for (i = 0; i < rules.length; i += 1){
+                var result = this.trigger ( rules[i](obj));
+                hasErrors = !!(hasErrors || result);
+            }
+
+            return !hasErrors;
+        },
+        trigger: function (type) {
+            var i,
+                typeCallbacks,
+                triggered = false;
+
+            if(this.callbacks.hasOwnProperty(type)){
+                typeCallbacks = this.callbacks[type];
+                triggered = true;
+
+                for (i = 0; i < typeCallbacks.length; i += 1) {
+                    typeCallbacks[i].fn();
+                }
+            }
+
+            return triggered;
+        },
+        addRule: function (scope, callback) {
+            var fn,
+                type;
+
+            if(Paraclete.Type.is('function', scope)){
+                // scope ist callback
+                fn = scope;
+                type = NO_SCOPE_GIVEN;
+            } else {
+                fn = callback;
+                type = scope;
+            }
+
+            if(!this.rules.hasOwnProperty(type)){
+                this.rules[type] = [];
+            }
+
+            this.rules[type].push(fn);
+        },
+        on: function (validationType, fn) {
+            var callbackId;
+
+            callbackId = Paraclete.getId();
+
+            if ( !this.callbacks[validationType] ){
+                this.callbacks[validationType] = [];
+            }
+            this.callbacks[validationType].push({
+                fn: fn,
+                id: callbackId
+            });
+
+            return callbackId;
+        },
+        off: function (id) {
+            var type,
+                i;
+
+            for( type in this.callbacks){
+                if (this.callbacks.hasOwnProperty(type)) {
+                    for( i = 0; i < type.length; i += 1){
+                        if(this.callbacks[type][i].id === id){
+                            this.callbacks[type].splice(i, 1);
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+})(Paraclete);
 //! Paraclete.Object
 (function (Paraclete) {
     'use strict';
@@ -476,6 +853,12 @@ var Paraclete = {
 
     Paraclete.Object = Paraclete.Observable.extend({
 
+        /**
+         * increments property by 1 or a given amount
+         * @param property
+         * @param incAmount
+         * @returns {*}
+         */
         inc: function (property, incAmount) {
             var amount = 1,
                 oldVal,
@@ -493,6 +876,12 @@ var Paraclete = {
             return newVal;
         },
 
+        /**
+         * decrements property by 1 or a given amount
+         * @param property
+         * @param incAmount
+         * @returns {*}
+         */
         dec: function (property, incAmount) {
             var amount = 1,
                 oldVal,
@@ -511,6 +900,11 @@ var Paraclete = {
             return newVal;
         },
 
+        /**
+         * toggles a property if it has a boolean value
+         * @param property
+         * @returns {*}
+         */
         toggle: function (property) {
             var prop = this.get(property);
             if (Paraclete.Type.is('boolean', prop)) {

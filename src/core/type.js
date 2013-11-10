@@ -86,6 +86,30 @@
                 is = types[type](value);
             }
             return is;
+        },
+
+        /**
+         * Trys to find a simple type string of a given value
+         * @param value
+         * @returns {*}
+         */
+        find: function (value) {
+            var found,
+                type,
+                typeString = '';
+
+            for (type in types) {
+                if (types.hasOwnProperty(type)) {
+                    found = types[type](value);
+
+                    if (found) {
+                        typeString = type;
+                        break;
+                    }
+                }
+            }
+
+            return typeString;
         }
     };
 
