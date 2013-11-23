@@ -562,8 +562,7 @@ var Paraclete = {
             var id;
 
             if (!Paraclete.Type.is('none', key)) {
-
-                if (this._store.hasOwnProperty(key)) {
+                if (!this._store.hasOwnProperty(key)) {
                     this._store[key] = [];
                 }
 
@@ -575,6 +574,28 @@ var Paraclete = {
             }
 
             return id;
+        },
+
+        remove: function (id) {
+            var storeAtom,
+                storeAtomElem,
+                i,
+                removed;
+
+            for (storeAtom in this._store) {
+                if (this._store.hasOwnProperty(storeAtom)) {
+                    for (i = 0; i < this._store[storeAtom].length; i += 1) {
+                        storeAtomElem = this._store[storeAtom][i];
+                        if (storeAtomElem.id === id) {
+                            // found element
+                            removed = storeAtomElem.val;
+                            this._store[storeAtom].splice(i, 1);
+                        }
+                    }
+                }
+            }
+
+            return removed;
         },
 
         find: function (key) {
@@ -674,7 +695,7 @@ var Paraclete = {
             return this.events.hasOwnProperty(type);
         },
         on: function (type, callback) {
-            return this.events.add('type', callback);
+            return this.events.add(type, callback);
         },
         off: function (eventId) {
             return this.events.remove(eventId);
@@ -689,8 +710,8 @@ var Paraclete = {
             if (!Paraclete.Type.is('none', events)) {
                 for (i = 0; i < events.length; i += 1) {
                     event = events[i];
-                    if (Paraclete.Type.is('function', event)) {
-                        event(payload);
+                    if (Paraclete.Type.is('function', event.val)) {
+                        event.val(payload);
                     }
                 }
             }
@@ -700,102 +721,48 @@ var Paraclete = {
     });
 
 }(Paraclete));
-//! Paraclete.Validation
+//! Paraclete.Object
 (function (Paraclete) {
     'use strict';
+    /*jslint nomen:true*/
+
+    /*global
+     Paraclete
+     */
 
     var NO_SCOPE_GIVEN = 'NO_SCOPE_GIVEN';
 
-    Paraclete.Validator = {
-        fieldsEmpty: function (checkedFields) {
-            return function(fields){
-                for(var i = 0; i < checkedFields.length; i++){
-                    if (!(fields.hasOwnProperty(checkedFields[i].name) &&
-                        fields[checkedFields[i].name].length)) {
-                        return checkedFields[i].callbackType;
-                    }
-                }
-
-            }
-
-        }
-    };
-
-    /*
     Paraclete.Validation = Paraclete.TriggerAble.extend({
-        validate: function (obj, type) {
-            if (!Paraclete.Type.is('none', type)) {
-                // has type
+        callbacks: {},
+        rules: {},
 
-                if (this.events.hasTrigger(type)) {
-                    // valider type gegeben
-                    this.events.trigger(type, obj);
-                } else {
-                    // type not found, do nothing
-                    console.warn('[Paraclete.Validation:validate] type not found ' + type);
-                }
-            } else {
-                // no type given
-                this.events.trigger(obj);
-            }
-        }
-    });
-    */
-
-
-    Paraclete.Validation = function () {
-        this.callbacks = {};
-        this.scopedRules = {};
-        this.rules = [];
-    };
-    /*
-    TODO:
-    - clone
-    - validate object for rules
-    - rules ignore scope
-
-     */
-    Paraclete.Validation.prototype = {
         validate: function (obj, scope) {
             var i,
+                result,
                 hasErrors = false,
                 rules = [];
 
-            if( this.rules.hasOwnProperty(scope)){
+            if (this.rules.hasOwnProperty(scope)) {
                 // hat scope mitgegeben
                 rules = this.rules[scope];
-            }else{
+            } else {
                 rules = this.rules[NO_SCOPE_GIVEN];
             }
 
-            for (i = 0; i < rules.length; i += 1){
-                var result = this.trigger ( rules[i](obj));
-                hasErrors = !!(hasErrors || result);
-            }
+            for (i = 0; i < rules.length; i += 1) {
 
+                result = this.trigger(rules[i](obj));
+                hasErrors = !!(hasErrors || result);
+
+            }
             return !hasErrors;
         },
-        trigger: function (type) {
-            var i,
-                typeCallbacks,
-                triggered = false;
 
-            if(this.callbacks.hasOwnProperty(type)){
-                typeCallbacks = this.callbacks[type];
-                triggered = true;
-
-                for (i = 0; i < typeCallbacks.length; i += 1) {
-                    typeCallbacks[i].fn();
-                }
-            }
-
-            return triggered;
-        },
         addRule: function (scope, callback) {
             var fn,
                 type;
 
-            if(Paraclete.Type.is('function', scope)){
+            if (Paraclete.Type.is('function', scope)) {
                 // scope ist callback
                 fn = scope;
                 type = NO_SCOPE_GIVEN;
@@ -804,44 +771,15 @@ var Paraclete = {
                 type = scope;
             }
 
-            if(!this.rules.hasOwnProperty(type)){
+            if (!this.rules.hasOwnProperty(type)) {
                 this.rules[type] = [];
             }
 
             this.rules[type].push(fn);
-        },
-        on: function (validationType, fn) {
-            var callbackId;
-
-            callbackId = Paraclete.getId();
-
-            if ( !this.callbacks[validationType] ){
-                this.callbacks[validationType] = [];
-            }
-            this.callbacks[validationType].push({
-                fn: fn,
-                id: callbackId
-            });
-
-            return callbackId;
-        },
-        off: function (id) {
-            var type,
-                i;
-
-            for( type in this.callbacks){
-                if (this.callbacks.hasOwnProperty(type)) {
-                    for( i = 0; i < type.length; i += 1){
-                        if(this.callbacks[type][i].id === id){
-                            this.callbacks[type].splice(i, 1);
-                        }
-                    }
-                }
-            }
         }
-    };
+    });
 
-})(Paraclete);
+}(Paraclete));
 //! Paraclete.Object
 (function (Paraclete) {
     'use strict';

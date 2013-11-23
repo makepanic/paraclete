@@ -15,8 +15,7 @@
             var id;
 
             if (!Paraclete.Type.is('none', key)) {
-
-                if (this._store.hasOwnProperty(key)) {
+                if (!this._store.hasOwnProperty(key)) {
                     this._store[key] = [];
                 }
 
@@ -28,6 +27,28 @@
             }
 
             return id;
+        },
+
+        remove: function (id) {
+            var storeAtom,
+                storeAtomElem,
+                i,
+                removed;
+
+            for (storeAtom in this._store) {
+                if (this._store.hasOwnProperty(storeAtom)) {
+                    for (i = 0; i < this._store[storeAtom].length; i += 1) {
+                        storeAtomElem = this._store[storeAtom][i];
+                        if (storeAtomElem.id === id) {
+                            // found element
+                            removed = storeAtomElem.val;
+                            this._store[storeAtom].splice(i, 1);
+                        }
+                    }
+                }
+            }
+
+            return removed;
         },
 
         find: function (key) {

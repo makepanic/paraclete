@@ -1,7 +1,7 @@
 {
     "name": "paraclete",
-    "version": "0.0.2",
-    "main": "build/paraclete-0.0.2.js",
+    "version": "0.0.3",
+    "main": "build/paraclete-0.0.3.js",
     "private": true,
     "devDependencies": {
         "grunt": "~0.4.1",

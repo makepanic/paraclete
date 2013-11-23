@@ -11,7 +11,7 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files : [
-            'build/paraclete-0.0.1.js',
+            'build/paraclete-0.0.3.js',
             'test/unit/**/*.js'
         ],
 

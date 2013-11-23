@@ -16,7 +16,7 @@
             return this.events.hasOwnProperty(type);
         },
         on: function (type, callback) {
-            return this.events.add('type', callback);
+            return this.events.add(type, callback);
         },
         off: function (eventId) {
             return this.events.remove(eventId);
@@ -31,8 +31,8 @@
             if (!Paraclete.Type.is('none', events)) {
                 for (i = 0; i < events.length; i += 1) {
                     event = events[i];
-                    if (Paraclete.Type.is('function', event)) {
-                        event(payload);
+                    if (Paraclete.Type.is('function', event.val)) {
+                        event.val(payload);
                     }
                 }
             }
