@@ -10,7 +10,6 @@
     var NO_SCOPE_GIVEN = 'NO_SCOPE_GIVEN';
 
     Paraclete.Validation = Paraclete.TriggerAble.extend({
-        callbacks: {},
         rules: {},
 
         validate: function (obj, scope) {
@@ -20,7 +19,6 @@
                 rules = [];
 
             if (this.rules.hasOwnProperty(scope)) {
-                // hat scope mitgegeben
                 rules = this.rules[scope];
             } else {
                 rules = this.rules[NO_SCOPE_GIVEN];
@@ -40,7 +38,7 @@
                 type;
 
             if (Paraclete.Type.is('function', scope)) {
-                // scope ist callback
+                // scope is callback
                 fn = scope;
                 type = NO_SCOPE_GIVEN;
             } else {

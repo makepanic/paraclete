@@ -14,9 +14,9 @@
 
         /**
          * Adds an observer for path
-         * @param path {string|Array} path or array of paths to observed property
-         * @param onChanged {function} function to call on change
-         * @returns {*} id or array of ids of the added observer
+         * @param {String|Array} path or array of paths to observed property
+         * @param {Function} onChanged function to call on change
+         * @returns {Number|Array} id or array of ids of the added observer
          */
         observe: function (path, onChanged) {
             var observationId,
@@ -51,8 +51,8 @@
         /**
          * Removes an observer with the given id.
          * If no id is given, remove all observers
-         * @param id
-         * @returns {boolean} if something was removed
+         * @param {Number|Array} id or array of ids
+         * @returns {Boolean} if something was removed
          */
         ignore: function (id) {
             var ignored = false,

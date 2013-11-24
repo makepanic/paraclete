@@ -11,6 +11,12 @@
     Paraclete.ArrayRegistry = Paraclete.Class.extend({
         _store: {},
 
+        /**
+         * Adds a value to the store for key
+         * @param {String} key
+         * @param {*} value
+         * @returns {Number} id of added value
+         */
         add: function (key, value) {
             var id;
 
@@ -29,6 +35,11 @@
             return id;
         },
 
+        /**
+         * Removes value with given id from storage
+         * @param {Number} id
+         * @returns {*} stored value if found
+         */
         remove: function (id) {
             var storeAtom,
                 storeAtomElem,
@@ -51,6 +62,11 @@
             return removed;
         },
 
+        /**
+         * Returns all values that are stored under a given key
+         * @param {String} key
+         * @returns {undefined|Array}
+         */
         find: function (key) {
             var found,
                 store;

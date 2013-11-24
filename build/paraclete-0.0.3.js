@@ -26,6 +26,10 @@
 var Paraclete = {
     v: '0.0.1',
     _id: 0,
+    /**
+     * Generates a unique id on runtime
+     * @returns {Number} id
+     */
     getId: function () {
         'use strict';
 
@@ -118,24 +122,91 @@ var Paraclete = {
 
     var traversePathGet,
         traversePathSet,
-        callObserver;
+        callObserver,
+        createObserverCallFunction;
 
+    /**
+     * creates a function that calls a given observer with a scope and given values
+     * @param {Object} rootObj
+     * @param {{fn: Function}} observer
+     * @param {*} property
+     * @param {*} value
+     * @returns {Function}
+     */
+    createObserverCallFunction = function (rootObj, observer,  property, value) {
+        return function () {
+            observer.fn.apply(rootObj, [property, value]);
+        };
+    };
+
+    /**
+     * Creates function to execution the stored observer with arguments
+     * @param {Object} rootObj
+     * @param {String} fullPath
+     * @param {*} value
+     * @param property
+     * @returns {Array}
+     */
+    callObserver = function (rootObj, fullPath, value, property) {
+        var i,
+            observers,
+            observerCalls = [];
+
+        // check if rootObj has meta and meta observations for fullPath
+        if (rootObj._meta && rootObj._meta.observations[fullPath]) {
+
+            // pick observation for fullPath
+            observers = rootObj._meta.observations[fullPath];
+
+            // loop through every observer
+            for (i = 0; i < observers.length; i += 1) {
+
+                // create callbacks for all observers
+                observerCalls.push(createObserverCallFunction(rootObj, observers[i], property, value));
+            }
+        }
+
+        return observerCalls;
+    };
+
+    /**
+     * @see {@link Paraclete.Traverse.getP}
+     * @param {Object} obj
+     * @param {String} path
+     * @returns {*}
+     */
     traversePathGet = function (obj, path) {
         var nextSplit = path.split('.'),
             next,
             result;
 
+        // split path into parts
         if (nextSplit.length) {
+
+            // take first element from path elements
             next = nextSplit[0];
             nextSplit = nextSplit.slice(1);
 
+            // check if obj has next key
             if (obj[next] !== undefined) {
+
+                // check if there is something left for the next path part
                 if (nextSplit.length >= 1) {
+
+                    // call get with object with the next key and path after next key
                     result = traversePathGet(obj[next], nextSplit.join('.'));
+
                 } else {
+                    // reached the end of the path
+
+                    // check if last value is a function
                     if (Paraclete.Type.is('function', obj[next])) {
+
+                        // execute function and store result
                         result = obj[next]();
                     } else {
+
+                        // store value in result
                         result = obj[next];
                     }
                 }
@@ -145,27 +216,18 @@ var Paraclete = {
         return result;
     };
 
-    callObserver = function (rootObj, fullPath, value, property) {
-        var i,
-            observers,
-            observerCalls = [];
-
-        if (rootObj._meta && rootObj._meta.observations[fullPath]) {
-            observers = rootObj._meta.observations[fullPath];
-            for (i = 0; i < observers.length; i += 1) {
-                observerCalls.push(
-                    (function (observers, i, property, value) {
-                        return function () {
-                            observers[i].fn.apply(rootObj, [property, value]);
-                        };
-                    })(observers, i, property, value)
-                );
-            }
-        }
-
-        return observerCalls;
-    };
-
+    /**
+     * Traverses a path on a object and sets a value
+     * @see {@link Paraclete.Traverse.setP}
+     * @param {Object} obj
+     * @param {String} path
+     * @param {*} value
+     * @param {String} [fullPath]
+     * @param {Object} [rootObj]
+     * @param {Array} [digested]
+     * @param {Array} [observerCalls]
+     * @returns {*}
+     */
     traversePathSet = function (obj, path, value, fullPath, rootObj, digested, observerCalls) {
         var nextSplit,
             next,
@@ -173,17 +235,27 @@ var Paraclete = {
             i,
             canObserve;
 
+        // check if observerCalls exist and initialize with empty array if not
         if (!observerCalls) {
             observerCalls = [];
         }
+
+        // check if fullPath exists
         if (!fullPath) {
+            // initialize fullPath with given path
             fullPath = path;
         }
+
+        // check if rootObj exists
         if (!rootObj) {
+            // initialize rootObj with obj
             rootObj = obj;
         }
+
+        // check if rootObj ist observable
         canObserve = rootObj instanceof Paraclete.Observable;
 
+        // check if digested exists and initialize with empty array if not
         if (!digested) {
             digested = [];
 
@@ -192,29 +264,46 @@ var Paraclete = {
             }
         }
 
+        // split path into parts
         nextSplit = path.split('.');
 
+        // check if parts have elements
         if (nextSplit.length) {
+
+            // pick first element of next path
             next = nextSplit[0];
+
+            // add picked value to digested array
             digested.push(next);
+
+            // remove the first element from next paths
             nextSplit = nextSplit.slice(1);
 
+            // check if there are more path elements
             if (nextSplit.length > 0) {
                 // has more to traverse
 
                 if (canObserve) {
+                    // add observer call to observerCalls array
                     observerCalls = observerCalls.concat(callObserver(rootObj, digested.join('.'), value, nextSplit.join('.')));
                 }
+
+                // call set from current path object
                 result = traversePathSet(obj[next], nextSplit.join('.'), value, fullPath, rootObj, digested, observerCalls);
+
             } else {
-                // nothing left to traverse
+                // reached the end
+
                 if (canObserve) {
+                    // add observer call for last element
                     observerCalls = observerCalls.concat(callObserver(rootObj, fullPath, value, ''));
                 }
 
+                // set path value and result value
                 result = obj[next] = value;
 
                 if (canObserve) {
+                    // loop through each observer call and execute
                     for (i = 0; i < observerCalls.length; i += 1) {
                         observerCalls[i]();
                     }
@@ -226,8 +315,25 @@ var Paraclete = {
     };
 
     Paraclete.Traverse = {
-        getP: traversePathGet,
-        setP: traversePathSet
+        /**
+         * Gets a value on a object traversing a path
+         * @param {Object} obj
+         * @param {String} path Path to traverse
+         * @returns {*} stored value or undefined
+         */
+        getP: function (obj, path) {
+            return traversePathGet(obj, path);
+        },
+        /**
+         * Sets a value on an object traversing a path
+         * @param {Object} obj
+         * @param {String} path
+         * @param {*} val
+         * @returns {*} value that was stored
+         */
+        setP: function (obj, path, val) {
+            return traversePathSet(obj, path, val);
+        }
     };
 
 })(Paraclete);
@@ -360,7 +466,7 @@ var Paraclete = {
 
         /**
          * Copy all properties from props to this object
-         * @param {object} props
+         * @param {Object} props
          */
         init: function (props) {
             if (props) {
@@ -376,7 +482,7 @@ var Paraclete = {
 
         /**
          * get value from path
-         * @param {string} path string traverse this path to find the value
+         * @param {String} path string traverse this path to find the value
          * @returns {*} value or undefined
          */
         get: function (path) {
@@ -384,7 +490,7 @@ var Paraclete = {
         },
         /**
          * set value in path
-         * @param {string} path string traverse this path to find the value
+         * @param {String} path string traverse this path to find the value
          * @param {*} value * overwrite found value
          * @returns {*} value
          */
@@ -410,9 +516,9 @@ var Paraclete = {
 
         /**
          * Adds an observer for path
-         * @param path {string|Array} path or array of paths to observed property
-         * @param onChanged {function} function to call on change
-         * @returns {*} id or array of ids of the added observer
+         * @param {String|Array} path or array of paths to observed property
+         * @param {Function} onChanged function to call on change
+         * @returns {Number|Array} id or array of ids of the added observer
          */
         observe: function (path, onChanged) {
             var observationId,
@@ -447,8 +553,8 @@ var Paraclete = {
         /**
          * Removes an observer with the given id.
          * If no id is given, remove all observers
-         * @param id
-         * @returns {boolean} if something was removed
+         * @param {Number|Array} id or array of ids
+         * @returns {Boolean} if something was removed
          */
         ignore: function (id) {
             var ignored = false,
@@ -508,9 +614,19 @@ var Paraclete = {
      Paraclete
      */
 
+    /**
+     * Key value storage for values
+     * @type {*}
+     */
     Paraclete.Registry = Paraclete.Class.extend({
         _store: {},
 
+        /**
+         * Adds a value using a key to the storage
+         * @param {String} key identifier where to store the value
+         * @param {*} value
+         * @returns {*} value if added
+         */
         add: function (key, value) {
             var added;
 
@@ -522,6 +638,11 @@ var Paraclete = {
             return added;
         },
 
+        /**
+         * Finds a value in the storage using the given key
+         * @param {String} key
+         * @returns {*} stored value if found
+         */
         find: function (key) {
             var found;
 
@@ -532,6 +653,11 @@ var Paraclete = {
             return found;
         },
 
+        /**
+         * Removes value stored under key
+         * @param {String} key
+         * @returns {*} value if removed
+         */
         remove: function (key) {
             var removed;
 
@@ -558,6 +684,12 @@ var Paraclete = {
     Paraclete.ArrayRegistry = Paraclete.Class.extend({
         _store: {},
 
+        /**
+         * Adds a value to the store for key
+         * @param {String} key
+         * @param {*} value
+         * @returns {Number} id of added value
+         */
         add: function (key, value) {
             var id;
 
@@ -576,6 +708,11 @@ var Paraclete = {
             return id;
         },
 
+        /**
+         * Removes value with given id from storage
+         * @param {Number} id
+         * @returns {*} stored value if found
+         */
         remove: function (id) {
             var storeAtom,
                 storeAtomElem,
@@ -598,6 +735,11 @@ var Paraclete = {
             return removed;
         },
 
+        /**
+         * Returns all values that are stored under a given key
+         * @param {String} key
+         * @returns {undefined|Array}
+         */
         find: function (key) {
             var found,
                 store;
@@ -636,13 +778,27 @@ var Paraclete = {
      Paraclete
      */
 
+    /**
+     * Same as registry, but knows what property is used as identifier for a value.
+     * @see {@link Paraclete.Registry}
+     * @type {*}
+     */
     Paraclete.KeyRegistry = Paraclete.Registry.extend({
         key: '',
 
+        /**
+         * @constructor
+         * @param {{ key: String }} cfg configuration
+         */
         init: function (cfg) {
             this.key = cfg.key;
         },
 
+        /**
+         * Adds a value to the registry
+         * @param {*} value
+         * @returns {undefined|*} value if added
+         */
         add: function (value) {
             var added;
 
@@ -653,6 +809,11 @@ var Paraclete = {
             return added;
         },
 
+        /**
+         * Tries to find a value in the registry.
+         * @param {*} value
+         * @returns {undefined|*} value if found
+         */
         find: function (value) {
             var found;
 
@@ -663,6 +824,11 @@ var Paraclete = {
             return found;
         },
 
+        /**
+         * Removes value from registry.
+         * @param {*} value
+         * @returns {undefined|*} value if deleted
+         */
         remove: function (value) {
             var removed;
 
@@ -687,9 +853,7 @@ var Paraclete = {
      */
 
     Paraclete.TriggerAble = Paraclete.Class.extend({
-        events: new Paraclete.ArrayRegistry({
-            key: 'eventType'
-        }),
+        events: new Paraclete.ArrayRegistry(),
 
         hasTrigger: function (type) {
             return this.events.hasOwnProperty(type);
@@ -733,7 +897,6 @@ var Paraclete = {
     var NO_SCOPE_GIVEN = 'NO_SCOPE_GIVEN';
 
     Paraclete.Validation = Paraclete.TriggerAble.extend({
-        callbacks: {},
         rules: {},
 
         validate: function (obj, scope) {
@@ -743,7 +906,6 @@ var Paraclete = {
                 rules = [];
 
             if (this.rules.hasOwnProperty(scope)) {
-                // hat scope mitgegeben
                 rules = this.rules[scope];
             } else {
                 rules = this.rules[NO_SCOPE_GIVEN];
@@ -763,7 +925,7 @@ var Paraclete = {
                 type;
 
             if (Paraclete.Type.is('function', scope)) {
-                // scope ist callback
+                // scope is callback
                 fn = scope;
                 type = NO_SCOPE_GIVEN;
             } else {
@@ -793,9 +955,9 @@ var Paraclete = {
 
         /**
          * increments property by 1 or a given amount
-         * @param property
-         * @param incAmount
-         * @returns {*}
+         * @param {String} property
+         * @param {Number} incAmount
+         * @returns {*} updated value if exists
          */
         inc: function (property, incAmount) {
             var amount = 1,
@@ -816,9 +978,9 @@ var Paraclete = {
 
         /**
          * decrements property by 1 or a given amount
-         * @param property
-         * @param incAmount
-         * @returns {*}
+         * @param {String} property
+         * @param {Number} incAmount
+         * @returns {*} updated value if exists
          */
         dec: function (property, incAmount) {
             var amount = 1,
@@ -840,8 +1002,8 @@ var Paraclete = {
 
         /**
          * toggles a property if it has a boolean value
-         * @param property
-         * @returns {*}
+         * @param {String} property
+         * @returns {*} property
          */
         toggle: function (property) {
             var prop = this.get(property);

@@ -7,13 +7,27 @@
      Paraclete
      */
 
+    /**
+     * Same as registry, but knows what property is used as identifier for a value.
+     * @see {@link Paraclete.Registry}
+     * @type {*}
+     */
     Paraclete.KeyRegistry = Paraclete.Registry.extend({
         key: '',
 
+        /**
+         * @constructor
+         * @param {{ key: String }} cfg configuration
+         */
         init: function (cfg) {
             this.key = cfg.key;
         },
 
+        /**
+         * Adds a value to the registry
+         * @param {*} value
+         * @returns {undefined|*} value if added
+         */
         add: function (value) {
             var added;
 
@@ -24,6 +38,11 @@
             return added;
         },
 
+        /**
+         * Tries to find a value in the registry.
+         * @param {*} value
+         * @returns {undefined|*} value if found
+         */
         find: function (value) {
             var found;
 
@@ -34,6 +53,11 @@
             return found;
         },
 
+        /**
+         * Removes value from registry.
+         * @param {*} value
+         * @returns {undefined|*} value if deleted
+         */
         remove: function (value) {
             var removed;
 

@@ -11,9 +11,9 @@
 
         /**
          * increments property by 1 or a given amount
-         * @param property
-         * @param incAmount
-         * @returns {*}
+         * @param {String} property
+         * @param {Number} incAmount
+         * @returns {*} updated value if exists
          */
         inc: function (property, incAmount) {
             var amount = 1,
@@ -34,9 +34,9 @@
 
         /**
          * decrements property by 1 or a given amount
-         * @param property
-         * @param incAmount
-         * @returns {*}
+         * @param {String} property
+         * @param {Number} incAmount
+         * @returns {*} updated value if exists
          */
         dec: function (property, incAmount) {
             var amount = 1,
@@ -58,8 +58,8 @@
 
         /**
          * toggles a property if it has a boolean value
-         * @param property
-         * @returns {*}
+         * @param {String} property
+         * @returns {*} property
          */
         toggle: function (property) {
             var prop = this.get(property);

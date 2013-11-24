@@ -11,7 +11,7 @@
 
         /**
          * Copy all properties from props to this object
-         * @param {object} props
+         * @param {Object} props
          */
         init: function (props) {
             if (props) {
@@ -27,7 +27,7 @@
 
         /**
          * get value from path
-         * @param {string} path string traverse this path to find the value
+         * @param {String} path string traverse this path to find the value
          * @returns {*} value or undefined
          */
         get: function (path) {
@@ -35,7 +35,7 @@
         },
         /**
          * set value in path
-         * @param {string} path string traverse this path to find the value
+         * @param {String} path string traverse this path to find the value
          * @param {*} value * overwrite found value
          * @returns {*} value
          */

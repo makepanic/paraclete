@@ -8,9 +8,7 @@
      */
 
     Paraclete.TriggerAble = Paraclete.Class.extend({
-        events: new Paraclete.ArrayRegistry({
-            key: 'eventType'
-        }),
+        events: new Paraclete.ArrayRegistry(),
 
         hasTrigger: function (type) {
             return this.events.hasOwnProperty(type);
